@@ -1,7 +1,7 @@
 --[[
-    AnyWeaponStart v0.1
-    Author:
-        cgull (Discord: cgull#4469)
+    OneGodOnly v1.0
+        Author:
+        cgull (Discord: c_gull)
 
     Causes only one god to be seen, any time a boon is offered. Set which god in the config below.
 
@@ -13,29 +13,26 @@ ModUtil.RegisterMod("OneGodOnly")
 local config = {
     -- Hermes cannot be specified as DesiredOlympian
     DesiredOlympian = "Aphrodite",
-    HermesAppears = false,
-    HammersAppear = false,
+    HermesAppears = true,
+    HammersAppear = true,
 
 }
 
 OneGodOnly.Config = config
 
-ModUtil.WrapBaseFunction( "GetEligibleLootNames", 
-    function ( baseFunc, excludeLootNames )
-        local output = baseFunc(currentRun, excludeLootNames)
-        
-        for k, lootName in pairs( output ) do
-            local lootData = LootData[lootName]
-            if lootData.GodLoot and lootName ~= OneGodOnly.Config.DesiredOlympian .. "Upgrade" then
-                RemoveValue( output, lootName )
-            end
-            if lootName == "HermesUpgrade" and not OneGodOnly.Config.HermesAppears then
-                RemoveValue( output, lootName )
-            elseif lootName == "WeaponUpgrade" and not OneGodOnly.Config.HammersAppear then
-                RemoveValue( output, lootName )
-            end
-        end
-            
-        return output
-    end, OneGodOnly
-)
+ModUtil.Path.Wrap( "GetEligibleLootNames", function( baseFunc, exclueLootNames)
+    local baseTable = baseFunc(currentRun, excludeLootNames)
+    local returnTable = {OneGodOnly.Config.DesiredOlympian .. "Upgrade"}
+    if OneGodOnly.Config.HermesAppears  and Contains(baseTable, "HermesUpgrade") then
+        table.insert(returnTable, "HermesUpgrade")
+    end
+    if OneGodOnly.Config.HammersAppear and Contains(baseTable, "WeaponUpgrade") then
+        table.insert(returnTable, "WeaponUpgrade")
+    end
+
+    for k, lootName in pairs(returnTable) do
+        DebugPrint({Text=lootName})
+    end
+    return returnTable
+
+end, OneGodOnly)
