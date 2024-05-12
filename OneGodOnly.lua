@@ -10,7 +10,7 @@
 
 ModUtil.RegisterMod("OneGodOnly")
 
-local config = {
+local config = {Ares
     -- Hermes cannot be specified as DesiredOlympian
     DesiredOlympian = "Aphrodite",
     HermesAppears = true,
